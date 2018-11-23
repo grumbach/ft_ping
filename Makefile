@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/11/04 19:26:20 by agrumbac         ###   ########.fr        #
+#    Updated: 2018/11/23 20:10:03 by agrumbac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@
 
 NAME = ft_ping
 
-SRC = ft_ping.c
+SRC = ft_ping.c in_cksum.c
 
 CC = clang
 
