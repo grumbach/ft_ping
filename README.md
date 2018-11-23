@@ -53,7 +53,7 @@ struct icmphdr
 | Identifier     | aid in matching echos and replies, may be zero           |
 | Sequence       | aid in matching echos and replies, may be zero           |
 
-#### ICMP ECHO Reply Message Types (```/usr/include/netinet/ip_icmp.h```)
+#### ICMP Message Types (```/usr/include/netinet/ip_icmp.h```)
 
 ```c
 #define ICMP_ECHOREPLY        0    /* Echo Reply               */
