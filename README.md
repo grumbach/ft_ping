@@ -71,24 +71,6 @@ struct icmphdr
 #define ICMP_ADDRESSREPLY     18   /* Address Mask Reply       */
 ```
 
-#### Computing the Checksum ```man in_cksum```
-
-```c
-in_cksum, in4_cksum, in6_cksum -- compute Internet checksum
-
-uint16_t    in_cksum(struct mbuf *m, int len);
-
-uint16_t    in4_cksum(struct mbuf *m, uint8_t nxt, int off, int len);
-
-uint16_t    in6_cksum(struct mbuf *m, uint8_t nxt, int off, int len);
-
-If nxt is non zero, it is assumed that m starts with an IP(v4 or v6) header,
-  and that the transport layer header starts after off bytes.
-  For our echo ICMP header, we leave nxt and off to zero.
-
-The in_cksum() function is equivalent to in4_cksum(m, 0, 0, len).
-```
-
 #### Sending an ```icmphdr``` to socket (```man icmp```)
 
 ```c
