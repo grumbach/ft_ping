@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/11/23 20:10:03 by agrumbac         ###   ########.fr        #
+#    Updated: 2018/11/27 20:36:39 by agrumbac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@
 
 NAME = ft_ping
 
-SRC = ft_ping.c in_cksum.c
+SRC = ft_ping.c in_cksum.c gen_ping_packet.c
 
 CC = clang
 
@@ -48,6 +48,7 @@ M = "\033[35m"
 C = "\033[36m"
 WT = "\033[37;1m"
 W = "\033[0m""\033[32;1m"
+WB = "\033[0m""\033[34;5m"
 WR = "\033[0m""\033[31;5m"
 WY = "\033[0m""\033[33;5m"
 X = "\033[0m"
@@ -96,8 +97,23 @@ re: fclean all
 ############################## DECORATION ######################################
 
 art:
-	@echo ${WY}
-	@echo "__INSERT_ASCII_ART__"
+	@echo ${BB}
+	@echo "                           ."
+	@echo "                          | \\/|"
+	@echo "  "${WB}"(\\   _ "${X}${BB}"                 ) )|/|"
+	@echo "      "${WB}"(/"${X}${BB}"            _----. /.'.'"
+	@echo ".-._________..      .' "${WR}"@"${X}${BB}" "${BR}"_"${BB}"\\  .'  "${BG}"ft_ping!"${BB}
+	@echo "'.._______.   '.   /    "${BR}"(_|"${BB}" .') /"
+	@echo "  '._____.  /   '-/      | _.'"
+	@echo "   '.______ (         ) ) \\"
+	@echo "     '..____ '._       )  )"
+	@echo "        .' __.--\\  , ,  // (("
+	@echo "        '.'     |  \\/   (_.'(  "
+	@echo "                '   \\ .'"
+	@echo "                 \\   ("
+	@echo "                  \\   '."
+	@echo "                   \\ \\ '.)"
+	@echo "                    '-'-'"
 	@echo ${X}
 
 .PHONY: all clean fclean re art

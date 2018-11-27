@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:05:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/11/23 20:18:03 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/11/27 19:28:30 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,10 @@
 # include <netinet/ip_icmp.h>
 # include <arpa/inet.h>
 
-# ifdef __APPLE__
+# define PING_PACKET_SIZE			56
+# define PING_ID					42
 
-
-int	in_cksum(struct mbuf *m, int len);
-
-# endif
-
+uint16_t		in_cksum(const void *buffer, size_t size);
+void			gen_ping_packet(char *packet, int seq);
 
 #endif
