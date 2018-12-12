@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:05:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/12/12 02:36:20 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/12/12 03:46:55 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 # include <netinet/ip_icmp.h>
 # include <arpa/inet.h>
 
-# define IP_HDR_SIZE			20
-# define ICMP_MSG_SIZE			56
+# define IP_HDR_SIZE			0
+# define ICMP_MSG_SIZE			32
 
 # define FT_PING_ID				42
 # define FT_PING_TTL			64

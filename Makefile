@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/12/12 02:22:27 by agrumbac         ###   ########.fr        #
+#    Updated: 2018/12/12 03:03:21 by agrumbac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,11 +24,11 @@ OBJDIR = objs
 
 OBJ = $(addprefix ${OBJDIR}/, $(SRC:.c=.o))
 
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address,undefined -g
+DEP = $(addprefix ${OBJDIR}/, $(SRC:.c=.d))
+
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address,undefined -g -MMD
 
 INCLUDES = -Iincludes/
-
-DEP = includes/ft_ping.h
 
 ############################## COLORS ##########################################
 
@@ -62,7 +62,7 @@ ${NAME}: ${OBJ}
 	@${CC} ${CFLAGS} ${INCLUDES} -o $@ ${OBJ}
 	@echo ${G}Success"   "[${NAME}]${X}
 
-${OBJDIR}/%.o: ${SRCDIR}/%.c ${DEP}
+${OBJDIR}/%.o: ${SRCDIR}/%.c
 	@echo ${Y}Compiling [$@]...${X}
 	@/bin/mkdir -p ${OBJDIR}
 	@${CC} ${CFLAGS} ${INCLUDES} -c -o $@ $<
@@ -108,3 +108,5 @@ art:
 	@echo ${X}
 
 .PHONY: all clean fclean re art
+
+-include ${DEP}
