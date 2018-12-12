@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:04:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/11/27 22:47:53 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/12/12 02:36:52 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,11 @@ int		main(int ac, char **av)
 {
 	if (ac != 2)
 	{
-		ft_perr("Bad usage:\nft_ping <address>\n");
+		dprintf(2, "Bad usage:\nft_ping <address>\n");
 		return (EXIT_FAILURE);
 	}
 
-	char				packet[PING_PACKET_SIZE];
+	char				packet[IP_HDR_SIZE + ICMP_MSG_SIZE];
 	int					icmp_sock;
 	struct sockaddr_in	sockaddr;
 	char				*address = av[1];
@@ -53,17 +53,22 @@ int		main(int ac, char **av)
 	sockaddr.sin_addr.s_addr = inet_addr(address);
 	sockaddr.sin_port = htons(0);
 
-	gen_ping_packet(packet, 0);
+	gen_ip_header(packet, inet_addr(address));
+	gen_icmp_msg(packet + IP_HDR_SIZE, 0);
 
-	sendto(icmp_sock, &packet, sizeof(packet), 0, \
+	ssize_t ret = sendto(icmp_sock, &packet, sizeof(packet), 0, \
 		(struct sockaddr *)&sockaddr, sizeof(sockaddr));
 
+	if (ret == -1)
+		perror("err");
+
+	printf("[%zd]: %.*s\n", ret, ICMP_MSG_SIZE, packet);
 
 /*
 ** TESTS from this line on
 */
 
-	char				echo_packet[PING_PACKET_SIZE];
+	char				echo_packet[ICMP_MSG_SIZE];
 	char				buffer[512];
 	struct iovec		io =
 	{
@@ -81,9 +86,13 @@ int		main(int ac, char **av)
 		.msg_flags = 0
 	};
 
-	ssize_t ret = recvmsg(icmp_sock, &msg, 0);
+	ret = recvmsg(icmp_sock, &msg, 0);
 
-	ft_printf("[%d]: %.*s\n", ret, PING_PACKET_SIZE, echo_packet);
+	printf("[%zd]: %.*s\n", ret, ICMP_MSG_SIZE, echo_packet);
+
+/*
+** TESTS above this line
+*/
 
 	return (EXIT_SUCCESS);
 }
