@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/23 20:07:34 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/11/27 18:21:54 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/12/12 01:39:28 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,35 @@
 
 uint16_t		in_cksum(__unused const void *buffer, __unused size_t size)
 {
-	return (42);// TODO actually compute smth
+	asm volatile (".intel_syntax;\n"
+			"  xor rax, rax\n"
+			"  cmp rsi, 0x1\n"
+			"  jne _loop\n"
+			"_odd_case:\n"
+			"  xor rdx, rdx\n"
+			"  mov dl , BYTE PTR [rdi]\n"
+			"  sub rsi, 1\n"
+			"  jmp _add_cksum\n"
+			"_loop:\n"
+			"  xor rdx, rdx\n"
+			"  mov dx, WORD PTR [rdi]\n"
+			"  add rdi, 2\n"
+			"  sub rsi, 2\n"
+			"_add_cksum:\n"
+			"  add rax, rdx\n"
+			"  cmp rsi, 1\n"
+			"  jg _loop\n"
+			"  je _odd_case\n"
+			"  mov rcx, rax\n"
+			"  shr rcx, 16\n"
+			"  and rax, 0xffff\n"
+			"  add rax, rcx\n"
+			"  mov rcx, rax\n"
+			"  shr rcx, 16\n"
+			"  add rax, rcx\n"
+			"  not rax\n"
+			"  leave\n"
+			"  ret\n");
+
+	__builtin_unreachable();
 }

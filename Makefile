@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/11/27 20:36:39 by agrumbac         ###   ########.fr        #
+#    Updated: 2018/12/12 03:03:21 by agrumbac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@
 
 NAME = ft_ping
 
-SRC = ft_ping.c in_cksum.c gen_ping_packet.c
+SRC = ft_ping.c in_cksum.c gen_icmp_msg.c gen_ip_header.c print_packet.c
 
 CC = clang
 
@@ -24,13 +24,11 @@ OBJDIR = objs
 
 OBJ = $(addprefix ${OBJDIR}/, $(SRC:.c=.o))
 
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address,undefined -g
+DEP = $(addprefix ${OBJDIR}/, $(SRC:.c=.d))
 
-LIB = -Llibft/ -lft
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address,undefined -g -MMD
 
-INCLUDES = -Ilibft/includes/ -Iincludes/
-
-DEP = includes/ft_ping.h libft/libft.a
+INCLUDES = -Iincludes/
 
 ############################## COLORS ##########################################
 
@@ -59,16 +57,12 @@ CUT = "\033[K"
 
 all: art ${NAME}
 
-libft/%:
-	@[[ -d libft ]] || (echo ${M}Cloning"   "[libft]...${X} && git clone https://github.com/grumbach/libft &>/dev/null)
-	@make -C libft
-
 ${NAME}: ${OBJ}
 	@echo ${B}Compiling [${NAME}]...${X}
-	@${CC} ${CFLAGS} ${INCLUDES} ${LIB} -o $@ ${OBJ}
+	@${CC} ${CFLAGS} ${INCLUDES} -o $@ ${OBJ}
 	@echo ${G}Success"   "[${NAME}]${X}
 
-${OBJDIR}/%.o: ${SRCDIR}/%.c ${DEP}
+${OBJDIR}/%.o: ${SRCDIR}/%.c
 	@echo ${Y}Compiling [$@]...${X}
 	@/bin/mkdir -p ${OBJDIR}
 	@${CC} ${CFLAGS} ${INCLUDES} -c -o $@ $<
@@ -77,19 +71,16 @@ ${OBJDIR}/%.o: ${SRCDIR}/%.c ${DEP}
 ############################## GENERAL #########################################
 
 clean:
-	@echo ${R}Cleaning"  "[libft objs]...${X}
-	@make -C libft/ clean
 	@echo ${R}Cleaning"  "[objs]...${X}
 	@/bin/rm -Rf ${OBJDIR}
 
 fclean: clean
-	@make -C libft/ fclean
 	@echo ${R}Cleaning"  "[${NAME}]...${X}
 	@/bin/rm -f ${NAME}
 	@/bin/rm -Rf ${NAME}.dSYM
 
-test: libft/libft.a
-	@${CC} -g ${INCLUDES} -fsanitize=address,undefined ${LIB} \
+test:
+	@${CC} -g ${INCLUDES} -fsanitize=address,undefined \
 	-I. -o ${NAME} $(addprefix srcs/, ${SRC})
 
 re: fclean all
@@ -117,3 +108,5 @@ art:
 	@echo ${X}
 
 .PHONY: all clean fclean re art
+
+-include ${DEP}
