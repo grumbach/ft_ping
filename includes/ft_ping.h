@@ -23,10 +23,10 @@
 # include <netinet/ip_icmp.h>
 # include <arpa/inet.h>
 
-# define IP_HDR_SIZE			0
-# define ICMP_MSG_SIZE			32
+# define IP_HDR_SIZE			20
+# define ICMP_MSG_SIZE			44
 
-# define FT_PING_ID				42
+# define FT_PING_ID			42
 # define FT_PING_TTL			64
 
 # define __unused			__attribute__((unused))
@@ -35,5 +35,7 @@ uint16_t		in_cksum(const void *buffer, size_t size);
 
 void			gen_ip_header(void *packet, u_int32_t dest);
 void			gen_icmp_msg(void *packet, int seq);
+
+void			print_ip_icmp_packet(void *packet);
 
 #endif

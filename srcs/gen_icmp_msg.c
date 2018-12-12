@@ -18,7 +18,7 @@ static void	fill_icmp_header(struct icmphdr *ping, int id, int seq)
 {
 	ping->type = ICMP_ECHO;
 	ping->code = 0;
-	ping->un.echo.id = id;
+	ping->un.echo.id = htons(id);
 	ping->un.echo.sequence = htons(seq);
 	ping->checksum = in_cksum(ping, ICMP_MSG_SIZE);
 }
@@ -29,7 +29,7 @@ static void	fill_icmp_header(struct icmp *ping, int id, int seq)
 {
 	ping->icmp_type = ICMP_ECHO;
 	ping->icmp_code = 0;
-	ping->icmp_id = id;
+	ping->icmp_id = htons(id);
 	ping->icmp_seq = htons(seq);
 	ping->icmp_cksum = in_cksum(ping, ICMP_MSG_SIZE);
 }

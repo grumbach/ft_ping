@@ -14,7 +14,7 @@
 
 NAME = ft_ping
 
-SRC = ft_ping.c in_cksum.c gen_icmp_msg.c gen_ip_header.c
+SRC = ft_ping.c in_cksum.c gen_icmp_msg.c gen_ip_header.c print_packet.c
 
 CC = clang
 

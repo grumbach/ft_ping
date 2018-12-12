@@ -20,8 +20,8 @@ static inline void	fill_ip_header(struct iphdr *ip, u_int32_t dest)
 	ip->ihl = IP_HDR_SIZE / 4;
 	ip->tos = 0;
 	ip->tot_len = htons(IP_HDR_SIZE + ICMP_MSG_SIZE);
-	ip->id = 0;
-	ip->frag_off = 0;
+	ip->id = htons(0);
+	ip->frag_off = htons(0);
 	ip->ttl = FT_PING_TTL;
 	ip->protocol = 1;
 	ip->check = 0;
@@ -37,8 +37,8 @@ static inline void	fill_ip_header(struct ip *ip, u_int32_t dest)
 	ip->ip_hl = IP_HDR_SIZE / 4;
 	ip->ip_tos = 0;
 	ip->ip_len = htons(IP_HDR_SIZE + ICMP_MSG_SIZE);
-	ip->ip_id = 0;
-	ip->ip_off = 0;
+	ip->ip_id = htons(0);
+	ip->ip_off = htons(0);
 	ip->ip_ttl = FT_PING_TTL;
 	ip->ip_p = 1;
 	ip->ip_sum = 0;
