@@ -18,7 +18,6 @@
 # include <string.h>
 # include <sys/socket.h>
 # include <sys/types.h>
-# include <sys/mbuf.h>
 # include <netinet/in.h>
 # include <netinet/ip.h>
 # include <netinet/ip_icmp.h>
@@ -29,6 +28,8 @@
 
 # define FT_PING_ID				42
 # define FT_PING_TTL			64
+
+# define __unused			__attribute__((unused))
 
 uint16_t		in_cksum(const void *buffer, size_t size);
 

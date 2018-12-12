@@ -14,12 +14,12 @@
 
 #ifdef __linux__
 
-static void	fill_icmp_header(struct icmp *ping, int id, int seq)
+static void	fill_icmp_header(struct icmphdr *ping, int id, int seq)
 {
 	ping->type = ICMP_ECHO;
 	ping->code = 0;
-	ping->echo.id = id;
-	ping->echo.seq = htons(seq);
+	ping->un.echo.id = id;
+	ping->un.echo.sequence = htons(seq);
 	ping->checksum = in_cksum(ping, ICMP_MSG_SIZE);
 }
 
@@ -46,5 +46,5 @@ void		gen_icmp_msg(void *packet, int seq)
 	const size_t		hdr_size = sizeof(struct icmp);
 
 	fill_random_data(packet + hdr_size, ICMP_MSG_SIZE - hdr_size);
-	fill_icmp_header((struct icmp *)packet, 42, seq);
+	fill_icmp_header(packet, 42, seq);
 }
