@@ -166,3 +166,9 @@ Non privileged ICMP
 
 int    socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
 ```
+
+Enabling non privileged ICMP sockets for root on Linux
+
+```
+sysctl -w net.ipv4.ping_group_range="0 0"
+```

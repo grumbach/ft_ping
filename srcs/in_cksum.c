@@ -6,11 +6,16 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/23 20:07:34 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/12/12 01:39:28 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/18 20:29:34 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ping.h"
+
+/*
+** Muhahahahahaha! >:D-
+** (don't do this at home)
+*/
 
 uint16_t		in_cksum(__unused const void *buffer, __unused size_t size)
 {

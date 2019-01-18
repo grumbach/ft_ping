@@ -6,87 +6,76 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:04:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/12/12 03:39:26 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/18 20:58:07 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ping.h"
 
-static int	init_socket(void)
+static uint16_t		g_icmp_seq = 0;
+static int			g_sock;
+struct sockaddr_in	g_dest =
 {
-	int	icmp_sock;
+	.sin_family = AF_INET,
+	.sin_port = 0
+};
 
-	icmp_sock = socket(PF_INET, SOCK_RAW, IPPROTO_ICMP);
-	if (icmp_sock < 0)
-		perror("socket");
-	ssize_t				ret;
-	   ret = setsockopt(icmp_sock, IPPROTO_IP, IP_HDRINCL, &(int[1]){1}, sizeof(int));
-	if (ret == -1)
-	   perror("opt");
-	return (icmp_sock);
+__noreturn
+static void	ping_loop(void)
+{
+	char		sent_packet[PACKET_SIZE];
+	char		rcvd_packet[PACKET_SIZE];
+
+	// generate packet
+	gen_ip_header(sent_packet, g_dest.sin_addr.s_addr);
+	gen_icmp_msg(sent_packet, g_icmp_seq);
+	g_icmp_seq++;
+
+	// send, set timeout, receive
+	send_echo_request(g_sock, (struct sockaddr *)&g_dest, sent_packet);
+	alarm(FT_PING_DELAY);
+	receive_echo_reply(g_sock, g_dest);
+
+	// check
+	check_reply(sent_packet, rcvd_packet, g_icmp_seq);
+
+	// cheap ass tail recursion
+	asm("jmp _ping_loop");
+	__builtin_unreachable();
 }
 
-static void	send_echo_request(int icmp_sock, struct sockaddr_in sockaddr, char *packet)
+/*
+** signal management
+*/
+
+static void	signal_timeout(__unused int sig)
 {
-	ssize_t	ret;
-
-	ret = sendto(icmp_sock, packet, IP_HDR_SIZE + ICMP_MSG_SIZE, 0, \
-		(struct sockaddr *)&sockaddr, sizeof(sockaddr));
-	if (ret == -1)
-		perror("sendto");
-
-	printf("sending request:\n");
-	print_ip_icmp_packet(packet);
+	printf("Request timeout for icmp_seq %hu\n", g_icmp_seq);
+	ping_loop();
 }
 
-static void	receive_echo_reply(int icmp_sock, struct sockaddr_in sockaddr)
+static void	signal_exit(__unused int sig)
 {
-	ssize_t		ret;
-	char		echo_packet[ICMP_MSG_SIZE];
-	char		buffer[512];
-	struct iovec	io =
-	{
-		.iov_base = echo_packet,
-		.iov_len = sizeof(echo_packet)
-	};
-	struct msghdr	msg =
-	{
-		.msg_name = &sockaddr,
-		.msg_namelen = sizeof(sockaddr),
-		.msg_iov = &io,
-		.msg_iovlen = 1,
-		.msg_control = buffer,
-		.msg_controllen = sizeof(buffer),
-		.msg_flags = 0
-	};
-	ret = recvmsg(icmp_sock, &msg, 0);
-
-	printf("recieved answer:\n");
-	print_ip_icmp_packet(echo_packet);
+	close(g_sock);
+	// TODO print some stats?
+	exit(EXIT_SUCCESS);
 }
 
-int		main(int ac, char **av)
+int			main(int ac, char **av)
 {
 	if (ac != 2)
 	{
 		dprintf(2, "Bad usage:\nft_ping <address>\n");
 		return (EXIT_FAILURE);
 	}
+	if (signal(SIGALRM, &signal_timeout) == SIG_ERR
+	|| signal(SIGINT, &signal_exit) == SIG_ERR)
+		fatal("alarm failed");
 
-	char			*address = av[1];
-	int			icmp_sock = init_socket();
-	struct sockaddr_in	sockaddr;
-	char			packet[IP_HDR_SIZE + ICMP_MSG_SIZE];
+	g_sock = init_socket();
+	g_dest.sin_addr.s_addr = inet_addr(av[1]);
 
-	sockaddr.sin_family = PF_INET;
-	sockaddr.sin_addr.s_addr = inet_addr(address);
-	sockaddr.sin_port = htons(0);
+	ping_loop();
 
-	gen_ip_header(packet, inet_addr(address));
-	gen_icmp_msg(packet + IP_HDR_SIZE, 0);
-
-	send_echo_request(icmp_sock, sockaddr, packet);
-	receive_echo_reply(icmp_sock, sockaddr);
-
-	return (EXIT_SUCCESS);
+	__builtin_unreachable();
 }
