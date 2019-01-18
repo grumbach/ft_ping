@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:04:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/18 20:58:07 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/18 21:04:23 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,11 @@ static void	ping_loop(void)
 	check_reply(sent_packet, rcvd_packet, g_icmp_seq);
 
 	// cheap ass tail recursion
+	#ifdef __linux__
+	asm("jmp ping_loop");
+	#elif __APPLE__
 	asm("jmp _ping_loop");
+	#endif
 	__builtin_unreachable();
 }
 
