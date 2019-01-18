@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:04:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/18 21:04:23 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/18 21:42:20 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,16 +28,17 @@ static void	ping_loop(void)
 
 	// generate packet
 	gen_ip_header(sent_packet, g_dest.sin_addr.s_addr);
-	gen_icmp_msg(sent_packet, g_icmp_seq);
-	g_icmp_seq++;
+	gen_icmp_msg(sent_packet + IP_HDR_SIZE, g_icmp_seq);
 
-	// send, set timeout, receive
+	// send, set timeout, receive, clear timeout
 	send_echo_request(g_sock, (struct sockaddr *)&g_dest, sent_packet);
 	alarm(FT_PING_DELAY);
 	receive_echo_reply(g_sock, g_dest);
+	alarm(0);
 
 	// check
 	check_reply(sent_packet, rcvd_packet, g_icmp_seq);
+	g_icmp_seq++;
 
 	// cheap ass tail recursion
 	#ifdef __linux__
@@ -55,6 +56,7 @@ static void	ping_loop(void)
 static void	signal_timeout(__unused int sig)
 {
 	printf("Request timeout for icmp_seq %hu\n", g_icmp_seq);
+	g_icmp_seq++;
 	ping_loop();
 }
 
