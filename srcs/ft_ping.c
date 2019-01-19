@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:04:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/18 21:42:20 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/19 21:23:22 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,7 @@ static void	ping_loop(void)
 	g_icmp_seq++;
 
 	// cheap ass tail recursion
-	#ifdef __linux__
-	asm("jmp ping_loop");
-	#elif __APPLE__
-	asm("jmp _ping_loop");
-	#endif
-	__builtin_unreachable();
+	JMP_PING_LOOP
 }
 
 /*
@@ -57,7 +52,7 @@ static void	signal_timeout(__unused int sig)
 {
 	printf("Request timeout for icmp_seq %hu\n", g_icmp_seq);
 	g_icmp_seq++;
-	ping_loop();
+	alarm(FT_PING_DELAY);
 }
 
 static void	signal_exit(__unused int sig)
