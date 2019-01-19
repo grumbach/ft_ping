@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:05:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/19 20:38:48 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/19 22:19:02 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,14 @@
 # define __warn_unused_result	__attribute__((warn_unused_result))
 
 /*
-** Teleport to ping loop (cheap ass tail recursion)
+** Muhahahahahaahah! >:D-
+** Cheap ass tail recursion (don't do this at home)
 */
 
 # ifdef __linux__
-#  define JMP_PING_LOOP			asm("jmp ping_loop"); __builtin_unreachable();
+#  define JMP_PING_LOOP			asm("jmp ping_loop+15"); __builtin_unreachable();
 # elif __APPLE__
-#  define JMP_PING_LOOP			asm("jmp _ping_loop"); __builtin_unreachable();
+#  define JMP_PING_LOOP			asm("jmp _ping_loop+15"); __builtin_unreachable();
 # endif
 
 /*

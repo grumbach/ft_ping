@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/12 01:42:56 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/18 20:47:15 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/19 21:29:54 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static inline void	fill_ip_header(struct iphdr *ip, u_int32_t dest)
 	ip->id = htons(0);
 	ip->frag_off = htons(0);
 	ip->ttl = FT_PING_TTL;
-	ip->protocol = 1;
+	ip->protocol = IPPROTO_ICMP;
 	ip->check = 0;
 	ip->saddr = INADDR_ANY;
 	ip->daddr = dest;
@@ -40,7 +40,7 @@ static inline void	fill_ip_header(struct ip *ip, u_int32_t dest)
 	ip->ip_id = htons(0);
 	ip->ip_off = htons(0);
 	ip->ip_ttl = FT_PING_TTL;
-	ip->ip_p = 1;
+	ip->ip_p = IPPROTO_ICMP;
 	ip->ip_sum = 0;
 	ip->ip_src.s_addr = INADDR_ANY;
 	ip->ip_dst.s_addr = dest;
