@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/18 19:52:51 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/19 22:22:55 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/20 05:54:11 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ void	send_echo_request(int icmp_sock, const struct sockaddr *dest, \
 	ssize_t	ret;
 
 	ret = sendto(icmp_sock, packet, PACKET_SIZE, 0, dest, sizeof(*dest));
-
 	if (ret == -1)
 		warn("sendto failed");
 
@@ -41,15 +40,15 @@ void	send_echo_request(int icmp_sock, const struct sockaddr *dest, \
 	print_ip_icmp_packet(packet);
 }
 
-void	receive_echo_reply(int icmp_sock, struct sockaddr_in sockaddr)
+void	receive_echo_reply(int icmp_sock, struct sockaddr_in sockaddr, \
+			char *packet)
 {
-	ssize_t			ret;
-	char			echo_packet[PACKET_SIZE];
 	char			buffer[512];
+	ssize_t			ret;
 	struct iovec	io =
 	{
-		.iov_base = echo_packet,
-		.iov_len = sizeof(echo_packet)
+		.iov_base = packet,
+		.iov_len = PACKET_SIZE
 	};
 	struct msghdr	msg =
 	{
@@ -62,7 +61,9 @@ void	receive_echo_reply(int icmp_sock, struct sockaddr_in sockaddr)
 		.msg_flags = 0
 	};
 	ret = recvmsg(icmp_sock, &msg, 0);
+	if (ret == -1)
+		warn("recvmsg failed");
 
 	printf("recieved answer:\n");
-	print_ip_icmp_packet(echo_packet);
+	print_ip_icmp_packet(packet);
 }

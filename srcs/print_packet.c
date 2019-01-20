@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:05:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/12/12 06:23:32 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/20 06:05:08 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,22 +19,22 @@ void	print_ip_icmp_packet(void *packet)
 	struct iphdr *ip = packet;
 	struct icmphdr *icmp = packet + IP_HDR_SIZE;
 
-	printf("	ip->version [%x]\n"
-		"	ip->ihl [%x]\n"
-		"	ip->tos [%hhx]\n"
+	printf("\e[34m	ip->version [%x]"
+		"	ip->ihl [%x]"
+		"	ip->tos [%hhx]"
 		"	ip->tot_len [%hx]\n"
-		"	ip->id [%hx]\n"
-		"	ip->frag_off [%hx]\n"
-		"	ip->ttl [%hhx]\n"
+		"	ip->id [%hx]"
+		"	ip->frag_off [%hx]"
+		"	ip->ttl [%hhx]"
 		"	ip->protocol [%hhx]\n"
-		"	ip->check [%hx]\n"
-		"	ip->saddr [%x]\n"
-		"	ip->daddr [%x]\n"
+		"	ip->check [%hx]"
+		"	ip->saddr [%x]"
+		"	ip->daddr [%x]"
 		"	icmp->type [%hhx]\n"
-		"	icmp->code [%hhx]\n"
-		"	icmp->un.echo.id [%x]\n"
-		"	icmp->un.echo.sequence [%x]\n "
-		"	icmp->checksum [%hx]\n ",
+		"	icmp->code [%hhx]"
+		"	icmp->un.echo.id [%x]"
+		"	icmp->un.echo.sequence [%x]"
+		"	icmp->checksum [%hx]\e[0m\n",
 			ip->version,
 			ip->ihl,
 			ip->tos,
@@ -61,22 +61,22 @@ void	print_ip_icmp_packet(void *packet)
 	struct ip *ip = packet;
 	struct icmp *icmp = packet + IP_HDR_SIZE;
 
-	printf("	ip->version [%x]\n"
-		"	ip->ihl [%x]\n"
-		"	ip->tos [%hhx]\n"
+	printf("\e[34m	ip->version [%x]"
+		"	ip->ihl [%x]"
+		"	ip->tos [%hhx]"
 		"	ip->tot_len [%hx]\n"
-		"	ip->id [%hx]\n"
-		"	ip->frag_off [%hx]\n"
-		"	ip->ttl [%hhx]\n"
+		"	ip->id [%hx]"
+		"	ip->frag_off [%hx]"
+		"	ip->ttl [%hhx]"
 		"	ip->protocol [%hhx]\n"
-		"	ip->check [%hx]\n"
-		"	ip->saddr [%x]\n"
-		"	ip->daddr [%x]\n"
+		"	ip->check [%hx]"
+		"	ip->saddr [%x]"
+		"	ip->daddr [%x]"
 		"	icmp->type [%hhx]\n"
-		"	icmp->code [%hhx]\n"
-		"	icmp->un.echo.id [%x]\n"
-		"	icmp->un.echo.sequence [%x]\n "
-		"	icmp->checksum [%hx]\n ",
+		"	icmp->code [%hhx]"
+		"	icmp->un.echo.id [%x]"
+		"	icmp->un.echo.sequence [%x]"
+		"	icmp->checksum [%hx]\e[0m\n",
 			ip->ip_v,
 			ip->ip_hl,
 			ip->ip_tos,

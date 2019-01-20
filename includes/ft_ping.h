@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:05:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/19 22:19:02 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/20 06:21:24 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,24 +46,14 @@
 # define __warn_unused_result	__attribute__((warn_unused_result))
 
 /*
-** Muhahahahahaahah! >:D-
-** Cheap ass tail recursion (don't do this at home)
-*/
-
-# ifdef __linux__
-#  define JMP_PING_LOOP			asm("jmp ping_loop+15"); __builtin_unreachable();
-# elif __APPLE__
-#  define JMP_PING_LOOP			asm("jmp _ping_loop+15"); __builtin_unreachable();
-# endif
-
-/*
 ** Socket i/o
 */
 
 int				init_socket(void);
 void			send_echo_request(int icmp_sock, const struct sockaddr *dest, \
 					char *packet);
-void			receive_echo_reply(int icmp_sock, struct sockaddr_in sockaddr);
+void			receive_echo_reply(int icmp_sock, struct sockaddr_in sockaddr, \
+					char *packet);
 
 /*
 ** Packet creation
@@ -73,8 +63,12 @@ void			gen_ip_header(void *packet, u_int32_t dest);
 void			gen_icmp_msg(void *packet, int seq);
 uint16_t		in_cksum(const void *buffer, size_t size);
 
-void			check_reply(char sent_packet[PACKET_SIZE], \
-					char rcvd_packet[PACKET_SIZE], uint16_t seq);
+/*
+** Packet analysis
+*/
+
+void			check_reply(void *packet, uint16_t seq);
+void			print_stats(void);
 
 /*
 ** Debug
