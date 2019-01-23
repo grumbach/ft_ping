@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:04:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/20 06:32:51 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/23 20:41:20 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,11 @@ static void	recv_pong(void)
 {
 	char		rcvd_packet[PACKET_SIZE];
 
-	while (1)
-	{
-		receive_echo_reply(g_sock, g_dest, rcvd_packet);
-		check_reply(rcvd_packet, g_icmp_seq);
-	}
+	receive_echo_reply(g_sock, g_dest, rcvd_packet);
+	check_reply(rcvd_packet, g_icmp_seq);
+
+	// Cheap ass tail recursion ;)
+	JMP_RECV_PONG
 }
 
 static void	signal_exit(__unused int sig)

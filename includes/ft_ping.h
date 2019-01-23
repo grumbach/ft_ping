@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:05:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/20 06:21:24 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/23 20:51:59 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,17 @@
 # define __unused				__attribute__((unused))
 # define __noreturn				__attribute__((noreturn))
 # define __warn_unused_result	__attribute__((warn_unused_result))
+
+/*
+** Muhahahahahahaha >:D-
+** Cheap ass tail recursion
+*/
+
+#ifdef __linux__
+# define JMP_RECV_PONG			asm("jmp recv_pong+15");__builtin_unreachable();
+#elif __APPLE__
+# define JMP_RECV_PONG			asm("jmp _recv_pong+15");__builtin_unreachable();
+#endif
 
 /*
 ** Socket i/o
