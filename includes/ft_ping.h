@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:05:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/25 06:46:15 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 07:45:28 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@
 */
 
 # define IP_HDR_SIZE			20
-# define ICMP_HDR_SIZE			8
+# define ICMP_HDR_SIZE			ICMP_MINLEN
 # define ICMP_PAYLOAD_SIZE		56
 # define PACKET_SIZE			(IP_HDR_SIZE + ICMP_HDR_SIZE + ICMP_PAYLOAD_SIZE)
 # define ALIGN_TIMESTAMP		4

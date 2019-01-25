@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/18 20:23:03 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/25 06:47:17 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 07:51:06 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void				print_stats(void)
 	printf("%d%% packet loss, ", (int)(loss * 100.0f));
 
 	suseconds_t timediff = get_time() - g_stats.start_time;
-	printf("time %ld.%03ldms\n", timediff / 1000, timediff % 1000);
+	printf("time %ld.%03ldms\n", timediff / 1000l, timediff % 1000l);
 
 	if (g_stats.packets_recvd > 0)
 	{
@@ -130,7 +130,21 @@ static const char	*icmp_responses[] =
 
 #elif __APPLE__
 
-//TODO
+static const char	*icmp_responses[] =
+{
+	[ICMP_UNREACH]			= "Destination Unreachable",
+	[ICMP_SOURCEQUENCH]		= "Source Quench",
+	[ICMP_REDIRECT]			= "Redirect (change route)",
+	[ICMP_ECHO]				= "Echo Request",
+	[ICMP_TIMXCEED]			= "Time Exceeded",
+	[ICMP_PARAMPROB]		= "Parameter Problem",
+	[ICMP_TSTAMP]			= "Timestamp Request",
+	[ICMP_TSTAMPREPLY]		= "Timestamp Reply",
+	[ICMP_IREQ]				= "Information Request",
+	[ICMP_IREQREPLY]		= "Information Reply",
+	[ICMP_MASKREQ]			= "Address Mask Request",
+	[ICMP_MASKREPLY]		= "Address Mask Reply"
+};
 
 #endif
 
@@ -165,7 +179,7 @@ bool		check_reply(void *packet, uint16_t seq)
 	{
 		printf("%hu bytes from %s: icmp_seq=%hu ttl=%hhu time=%ld.%02ld ms\n", \
 			(uint16_t)(ntohs(ip->tot_len) - IP_HDR_SIZE), \
-			sender, recvd_seq, ip->ttl, rtt / 1000, rtt % 1000);
+			sender, recvd_seq, ip->ttl, rtt / 1000l, rtt % 1000l);
 
 		update_rtt_stats(rtt, seq);
 	}
@@ -177,17 +191,37 @@ bool		check_reply(void *packet, uint16_t seq)
 
 #elif __APPLE__
 
-bool		check_reply(__unused void *packet, __unused uint16_t seq)
+bool		check_reply(void *packet, uint16_t seq)
 {
-	__unused struct ip *ip = packet;
-	__unused struct icmp *icmp = packet + IP_HDR_SIZE;
-
+	struct ip		*ip = packet;
+	struct icmp		*icmp = packet + IP_HDR_SIZE;
+	const char		*error_str;
+	char			*sender = inet_ntoa((struct in_addr){.s_addr = ip->ip_src.s_addr});
 	suseconds_t		rtt = get_rtt(packet + IP_HDR_SIZE + ICMP_HDR_SIZE + ALIGN_TIMESTAMP);
-	update_rtt_stats(rtt, seq);
+	u_int16_t		recvd_seq = ntohs(icmp->icmp_seq);
 
-	//TODO
+	if (icmp->icmp_type != ICMP_ECHOREPLY)
+	{
+		if (icmp->icmp_type < sizeof(icmp_responses))
+			error_str = icmp_responses[icmp->icmp_type];
+		else
+			error_str = NULL;
+		printf("From %s icmp_seq=%hu %s", sender, recvd_seq, error_str);
 
-	return (true);
+		g_stats.nb_errors++;
+	}
+	else
+	{
+		printf("%hu bytes from %s: icmp_seq=%hu ttl=%hhu time=%ld.%02ld ms\n", \
+			(uint16_t)(ntohs(ip->ip_len) - IP_HDR_SIZE), \
+			sender, recvd_seq, ip->ip_ttl, rtt / 1000l, rtt % 1000l);
+
+		update_rtt_stats(rtt, seq);
+	}
+
+	g_stats.packets_recvd++;
+
+	return (seq == recvd_seq);
 }
 
 #endif
