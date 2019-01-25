@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/18 20:23:03 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/25 10:11:02 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 11:01:34 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ static const char	*icmp_responses[] =
 	[ICMP_SOURCE_QUENCH]	= "Source Quench",
 	[ICMP_REDIRECT]			= "Redirect (change route)",
 	[ICMP_ECHO]				= "Echo Request",
-	[ICMP_TIME_EXCEEDED]	= "Time Exceeded",
+	[ICMP_TIME_EXCEEDED]	= "Time to live exceeded",
 	[ICMP_PARAMETERPROB]	= "Parameter Problem",
 	[ICMP_TIMESTAMP]		= "Timestamp Request",
 	[ICMP_TIMESTAMPREPLY]	= "Timestamp Reply",
@@ -146,7 +146,7 @@ static const char	*icmp_responses[] =
 	[ICMP_SOURCEQUENCH]		= "Source Quench",
 	[ICMP_REDIRECT]			= "Redirect (change route)",
 	[ICMP_ECHO]				= "Echo Request",
-	[ICMP_TIMXCEED]			= "Time Exceeded",
+	[ICMP_TIMXCEED]			= "Time to live exceeded",
 	[ICMP_PARAMPROB]		= "Parameter Problem",
 	[ICMP_TSTAMP]			= "Timestamp Request",
 	[ICMP_TSTAMPREPLY]		= "Timestamp Reply",
@@ -172,7 +172,7 @@ void		check_reply(void *packet, uint16_t seq)
 	struct icmphdr	*icmp = packet + IP_HDR_SIZE;
 	const char		*error_str;
 	char			*sender = net_ntoa((struct in_addr){.s_addr = ip->saddr});
-	suseconds_t		rtt = get_rtt(packet + IP_HDR_SIZE + ICMP_HDR_SIZE + ALIGN_TIMESTAMP);
+	suseconds_t		rtt;
 	u_int16_t		recvd_seq = ntohs(icmp->un.echo.sequence);
 
 	if (icmp->type != ICMP_ECHOREPLY)
@@ -181,12 +181,13 @@ void		check_reply(void *packet, uint16_t seq)
 			error_str = icmp_responses[icmp->type];
 		else
 			error_str = NULL;
-		printf("From %s icmp_seq=%hu %s", sender, recvd_seq, error_str);
+		printf("From %s icmp_seq=%hu %s\n", sender, recvd_seq, error_str);
 
 		g_stats.nb_errors++;
 	}
 	else
 	{
+		rtt = get_rtt(packet + IP_HDR_SIZE + ICMP_HDR_SIZE + ALIGN_TIMESTAMP);
 		printf("%hu bytes from %s: icmp_seq=%hu ttl=%hhu time=%ld.%02ld ms\n", \
 			(uint16_t)(ntohs(ip->tot_len) - IP_HDR_SIZE), \
 			sender, recvd_seq, ip->ttl, rtt / 1000l, rtt % 1000l);
@@ -205,7 +206,7 @@ void		check_reply(void *packet, uint16_t seq)
 	struct icmp		*icmp = packet + IP_HDR_SIZE;
 	const char		*error_str;
 	char			*sender = net_ntoa((struct in_addr){.s_addr = ip->ip_src.s_addr});
-	suseconds_t		rtt = get_rtt(packet + IP_HDR_SIZE + ICMP_HDR_SIZE + ALIGN_TIMESTAMP);
+	suseconds_t		rtt;
 	u_int16_t		recvd_seq = ntohs(icmp->icmp_seq);
 
 	if (icmp->icmp_type != ICMP_ECHOREPLY)
@@ -214,12 +215,13 @@ void		check_reply(void *packet, uint16_t seq)
 			error_str = icmp_responses[icmp->icmp_type];
 		else
 			error_str = NULL;
-		printf("From %s icmp_seq=%hu %s", sender, recvd_seq, error_str);
+		printf("From %s icmp_seq=%hu %s\n", sender, recvd_seq, error_str);
 
 		g_stats.nb_errors++;
 	}
 	else
 	{
+		rtt = get_rtt(packet + IP_HDR_SIZE + ICMP_HDR_SIZE + ALIGN_TIMESTAMP);
 		printf("%hu bytes from %s: icmp_seq=%hu ttl=%hhu time=%ld.%02ld ms\n", \
 			(uint16_t)(ntohs(ip->ip_len) - IP_HDR_SIZE), \
 			sender, recvd_seq, ip->ip_ttl, rtt / 1000l, rtt % 1000l);
