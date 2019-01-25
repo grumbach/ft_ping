@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:05:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/25 10:14:05 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 11:26:56 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,17 +69,6 @@ typedef struct			s_stats
 	uint				packets_recvd;
 	uint				nb_errors;
 }						t_stats;
-
-/*
-** Muhahahahahahaha >:D-
-** Cheap ass tail recursion
-*/
-
-#ifdef __linux__
-# define JMP_RECV_PONG			asm("jmp recv_pong+15");__builtin_unreachable();
-#elif __APPLE__
-# define JMP_RECV_PONG			asm("jmp _recv_pong+15");__builtin_unreachable();
-#endif
 
 /*
 ** Socket i/o

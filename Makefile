@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2019/01/20 04:52:30 by agrumbac         ###   ########.fr        #
+#    Updated: 2019/01/25 11:27:05 by agrumbac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,9 @@ OBJ = $(addprefix ${OBJDIR}/, $(SRC:.c=.o))
 
 DEP = $(addprefix ${OBJDIR}/, $(SRC:.c=.d))
 
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address,undefined -g -MMD
+CFLAGS = -Wall -Wextra -Werror -MMD
+
+LDFLAGS = -lm
 
 INCLUDES = -Iincludes/
 
@@ -60,7 +62,7 @@ all: art ${NAME}
 
 ${NAME}: ${OBJ}
 	@echo ${B}Compiling [${NAME}]...${X}
-	@${CC} ${CFLAGS} ${INCLUDES} -o $@ ${OBJ}
+	@${CC} ${CFLAGS} ${LDFLAGS} ${INCLUDES} -o $@ ${OBJ}
 	@echo ${G}Success"   "[${NAME}]${X}
 
 ${OBJDIR}/%.o: ${SRCDIR}/%.c
