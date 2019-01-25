@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/27 19:20:21 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/23 20:08:21 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 04:41:38 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,12 @@ static void	fill_icmp_header(struct icmp *ping, int id, int seq)
 
 #endif
 
+static void	fill_timestamp(void *buffer)
+{
+	if (gettimeofday(buffer, NULL) == -1)
+		warn("failed getting time of day");
+}
+
 static void	fill_random_data(void *buffer, size_t size)
 {
 	memset(buffer, 42, size);
@@ -46,5 +52,6 @@ static void	fill_random_data(void *buffer, size_t size)
 void		gen_icmp_msg(void *packet, int seq)
 {
 	fill_random_data(packet + ICMP_HDR_SIZE, ICMP_PAYLOAD_SIZE);
+	fill_timestamp(packet + ICMP_HDR_SIZE + ALIGN_TIMESTAMP);
 	fill_icmp_header(packet, 42, seq);
 }

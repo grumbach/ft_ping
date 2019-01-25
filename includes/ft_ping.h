@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:05:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/23 20:51:59 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 06:46:15 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,11 @@
 # include <stdlib.h>
 # include <string.h>
 # include <signal.h>
+# include <stdbool.h>
+# include <math.h>
 # include <sys/socket.h>
 # include <sys/types.h>
+# include <sys/time.h>
 # include <netinet/in.h>
 # include <netinet/ip.h>
 # include <netinet/ip_icmp.h>
@@ -40,10 +43,23 @@
 # define ICMP_HDR_SIZE			8
 # define ICMP_PAYLOAD_SIZE		56
 # define PACKET_SIZE			(IP_HDR_SIZE + ICMP_HDR_SIZE + ICMP_PAYLOAD_SIZE)
+# define ALIGN_TIMESTAMP		4
 
 # define __unused				__attribute__((unused))
 # define __noreturn				__attribute__((noreturn))
 # define __warn_unused_result	__attribute__((warn_unused_result))
+
+typedef struct		s_stats
+{
+	suseconds_t		rtt_min;
+	suseconds_t		rtt_max;
+	suseconds_t		rtt_total;
+	suseconds_t		rtt_sq_total;
+	suseconds_t		start_time;
+	uint			packets_sent;
+	uint			packets_recvd;
+	uint			nb_errors;
+}					t_stats;
 
 /*
 ** Muhahahahahahaha >:D-
@@ -78,7 +94,9 @@ uint16_t		in_cksum(const void *buffer, size_t size);
 ** Packet analysis
 */
 
-void			check_reply(void *packet, uint16_t seq);
+bool			check_reply(void *packet, uint16_t seq);
+void			set_stats_timer(void);
+void			update_stats(void);
 void			print_stats(void);
 
 /*
