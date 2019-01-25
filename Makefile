@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/12/12 03:03:21 by agrumbac         ###   ########.fr        #
+#    Updated: 2019/01/20 04:52:30 by agrumbac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,8 @@
 
 NAME = ft_ping
 
-SRC = ft_ping.c in_cksum.c gen_icmp_msg.c gen_ip_header.c print_packet.c
+SRC = ft_ping.c in_cksum.c gen_icmp_msg.c gen_ip_header.c print_packet.c \
+	errors.c socket_io.c packet_analysis.c
 
 CC = clang
 

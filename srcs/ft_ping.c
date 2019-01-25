@@ -6,87 +6,104 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:04:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/12/12 03:39:26 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 10:13:45 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ping.h"
 
-static int	init_socket(void)
+static t_ping	g_ping =
 {
-	int	icmp_sock;
+	.sequence = 0,
+	.sock = 0,
+	.verbose_mode = false,
+	.dest_addr = NULL,
+	.dest =
+	{
+		.sin_family = AF_INET,
+		.sin_port = 0
+	}
+};
 
-	icmp_sock = socket(PF_INET, SOCK_RAW, IPPROTO_ICMP);
-	if (icmp_sock < 0)
-		perror("socket");
-	ssize_t				ret;
-	   ret = setsockopt(icmp_sock, IPPROTO_IP, IP_HDRINCL, &(int[1]){1}, sizeof(int));
-	if (ret == -1)
-	   perror("opt");
-	return (icmp_sock);
+static void	send_ping(__unused int sig)
+{
+	char		sent_packet[PACKET_SIZE];
+
+	g_ping.sequence++;
+
+	gen_ip_header(sent_packet, g_ping.dest.sin_addr.s_addr);
+	gen_icmp_msg(sent_packet + IP_HDR_SIZE, g_ping.sequence);
+
+	send_echo_request(g_ping.sock, (const struct sockaddr *)&g_ping.dest, \
+		sent_packet, g_ping.verbose_mode);
+
+	alarm(FT_PING_DELAY);
 }
 
-static void	send_echo_request(int icmp_sock, struct sockaddr_in sockaddr, char *packet)
+__noreturn
+static void	recv_pong(void)
 {
-	ssize_t	ret;
+	char		rcvd_packet[PACKET_SIZE];
 
-	ret = sendto(icmp_sock, packet, IP_HDR_SIZE + ICMP_MSG_SIZE, 0, \
-		(struct sockaddr *)&sockaddr, sizeof(sockaddr));
-	if (ret == -1)
-		perror("sendto");
+	receive_echo_reply(g_ping.sock, g_ping.dest, rcvd_packet, g_ping.verbose_mode);
+	check_reply(rcvd_packet, g_ping.sequence);
 
-	printf("sending request:\n");
-	print_ip_icmp_packet(packet);
+	// Magic tail recursion
+	JMP_RECV_PONG
 }
 
-static void	receive_echo_reply(int icmp_sock, struct sockaddr_in sockaddr)
+static void	signal_exit(__unused int sig)
 {
-	ssize_t		ret;
-	char		echo_packet[ICMP_MSG_SIZE];
-	char		buffer[512];
-	struct iovec	io =
-	{
-		.iov_base = echo_packet,
-		.iov_len = sizeof(echo_packet)
-	};
-	struct msghdr	msg =
-	{
-		.msg_name = &sockaddr,
-		.msg_namelen = sizeof(sockaddr),
-		.msg_iov = &io,
-		.msg_iovlen = 1,
-		.msg_control = buffer,
-		.msg_controllen = sizeof(buffer),
-		.msg_flags = 0
-	};
-	ret = recvmsg(icmp_sock, &msg, 0);
-
-	printf("recieved answer:\n");
-	print_ip_icmp_packet(echo_packet);
+	close(g_ping.sock);
+	print_stats(g_ping.sequence, g_ping.dest_addr);
+	exit(EXIT_SUCCESS);
 }
 
-int		main(int ac, char **av)
+static char	*parse_input(int ac, char **av)
 {
-	if (ac != 2)
+	struct addrinfo			hints = {.ai_family = AF_INET};
+	struct addrinfo			*res;
+
+	// sloppy check for "-v" verbose flag
+	if (ac > 2 && av[1][0] == '-' && av[1][1] == 'v' && av[1][2] == '\0')
 	{
-		dprintf(2, "Bad usage:\nft_ping <address>\n");
-		return (EXIT_FAILURE);
+		g_ping.verbose_mode = true;
+		av++;
 	}
 
-	char			*address = av[1];
-	int			icmp_sock = init_socket();
-	struct sockaddr_in	sockaddr;
-	char			packet[IP_HDR_SIZE + ICMP_MSG_SIZE];
+	// get dest_addr
+	if (getaddrinfo(av[1], NULL, &hints, &res))
+	{
+		dprintf(2, "ping: failed to get address from %s\n", av[1]);
+		return (NULL);
+	}
+	g_ping.dest.sin_addr.s_addr = ((struct sockaddr_in*)res->ai_addr)->sin_addr.s_addr;
+	freeaddrinfo(res);
 
-	sockaddr.sin_family = PF_INET;
-	sockaddr.sin_addr.s_addr = inet_addr(address);
-	sockaddr.sin_port = htons(0);
+	return (av[1]);
+}
 
-	gen_ip_header(packet, inet_addr(address));
-	gen_icmp_msg(packet + IP_HDR_SIZE, 0);
+int			main(int ac, char **av)
+{
+	if (ac < 2 || (av[1][0] == '-' && av[1][1] == 'h'))
+	{
+		dprintf(2, "Usage: %s [-hv] destination\n", av[0]);
+		return (EXIT_FAILURE);
+	}
+	if (signal(SIGALRM, &send_ping) == SIG_ERR
+	|| signal(SIGINT, &signal_exit) == SIG_ERR)
+		fatal("alarm failed");
 
-	send_echo_request(icmp_sock, sockaddr, packet);
-	receive_echo_reply(icmp_sock, sockaddr);
+	g_ping.dest_addr = parse_input(ac, av);
+	if (g_ping.dest_addr == NULL)
+		return (EXIT_FAILURE);
 
-	return (EXIT_SUCCESS);
+	g_ping.sock = init_socket();
+	set_stats_timer();
+
+	printf("PING %s %d(%d) bytes of data.\n", g_ping.dest_addr, ICMP_PAYLOAD_SIZE, PACKET_SIZE);
+
+	send_ping(0);
+	recv_pong();
+	__builtin_unreachable();
 }

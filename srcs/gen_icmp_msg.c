@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/27 19:20:21 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/12/12 02:06:18 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 04:41:38 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ static void	fill_icmp_header(struct icmphdr *ping, int id, int seq)
 	ping->code = 0;
 	ping->un.echo.id = htons(id);
 	ping->un.echo.sequence = htons(seq);
-	ping->checksum = in_cksum(ping, ICMP_MSG_SIZE);
+	ping->checksum = 0;
+	ping->checksum = in_cksum(ping, ICMP_PAYLOAD_SIZE + ICMP_HDR_SIZE);
 }
 
 #elif __APPLE__
@@ -31,10 +32,17 @@ static void	fill_icmp_header(struct icmp *ping, int id, int seq)
 	ping->icmp_code = 0;
 	ping->icmp_id = htons(id);
 	ping->icmp_seq = htons(seq);
-	ping->icmp_cksum = in_cksum(ping, ICMP_MSG_SIZE);
+	ping->icmp_cksum = 0;
+	ping->icmp_cksum = in_cksum(ping, ICMP_PAYLOAD_SIZE + ICMP_HDR_SIZE);
 }
 
 #endif
+
+static void	fill_timestamp(void *buffer)
+{
+	if (gettimeofday(buffer, NULL) == -1)
+		warn("failed getting time of day");
+}
 
 static void	fill_random_data(void *buffer, size_t size)
 {
@@ -43,8 +51,7 @@ static void	fill_random_data(void *buffer, size_t size)
 
 void		gen_icmp_msg(void *packet, int seq)
 {
-	const size_t		hdr_size = sizeof(struct icmp);
-
-	fill_random_data(packet + hdr_size, ICMP_MSG_SIZE - hdr_size);
+	fill_random_data(packet + ICMP_HDR_SIZE, ICMP_PAYLOAD_SIZE);
+	fill_timestamp(packet + ICMP_HDR_SIZE + ALIGN_TIMESTAMP);
 	fill_icmp_header(packet, 42, seq);
 }

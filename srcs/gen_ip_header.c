@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/12 01:42:56 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/12/12 02:32:12 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/19 21:29:54 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@ static inline void	fill_ip_header(struct iphdr *ip, u_int32_t dest)
 	ip->version = 4;
 	ip->ihl = IP_HDR_SIZE / 4;
 	ip->tos = 0;
-	ip->tot_len = htons(IP_HDR_SIZE + ICMP_MSG_SIZE);
+	ip->tot_len = htons(PACKET_SIZE);
 	ip->id = htons(0);
 	ip->frag_off = htons(0);
 	ip->ttl = FT_PING_TTL;
-	ip->protocol = 1;
+	ip->protocol = IPPROTO_ICMP;
 	ip->check = 0;
 	ip->saddr = INADDR_ANY;
 	ip->daddr = dest;
@@ -36,11 +36,11 @@ static inline void	fill_ip_header(struct ip *ip, u_int32_t dest)
 	ip->ip_v = 4;
 	ip->ip_hl = IP_HDR_SIZE / 4;
 	ip->ip_tos = 0;
-	ip->ip_len = htons(IP_HDR_SIZE + ICMP_MSG_SIZE);
+	ip->ip_len = htons(PACKET_SIZE);
 	ip->ip_id = htons(0);
 	ip->ip_off = htons(0);
 	ip->ip_ttl = FT_PING_TTL;
-	ip->ip_p = 1;
+	ip->ip_p = IPPROTO_ICMP;
 	ip->ip_sum = 0;
 	ip->ip_src.s_addr = INADDR_ANY;
 	ip->ip_dst.s_addr = dest;
