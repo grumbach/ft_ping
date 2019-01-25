@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/18 20:23:03 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/25 11:01:34 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 15:14:01 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,6 +177,8 @@ void		check_reply(void *packet, uint16_t seq)
 
 	if (icmp->type != ICMP_ECHOREPLY)
 	{
+		if (icmp->type == ICMP_ECHO)
+			return ;
 		if (icmp->type < sizeof(icmp_responses))
 			error_str = icmp_responses[icmp->type];
 		else
@@ -211,6 +213,8 @@ void		check_reply(void *packet, uint16_t seq)
 
 	if (icmp->icmp_type != ICMP_ECHOREPLY)
 	{
+		if (icmp->icmp_type == ICMP_ECHO)
+			return ;
 		if (icmp->icmp_type < sizeof(icmp_responses))
 			error_str = icmp_responses[icmp->icmp_type];
 		else
