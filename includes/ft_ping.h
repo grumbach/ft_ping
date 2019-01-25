@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:05:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/25 07:45:28 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 08:10:40 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ typedef struct		s_stats
 	suseconds_t		rtt_total;
 	suseconds_t		rtt_sq_total;
 	suseconds_t		start_time;
-	uint			packets_sent;
 	uint			packets_recvd;
 	uint			nb_errors;
 }					t_stats;
@@ -94,10 +93,9 @@ uint16_t		in_cksum(const void *buffer, size_t size);
 ** Packet analysis
 */
 
-bool			check_reply(void *packet, uint16_t seq);
+void			check_reply(void *packet, uint16_t seq);
 void			set_stats_timer(void);
-void			update_stats(void);
-void			print_stats(void);
+void			print_stats(uint packets_sent);
 
 /*
 ** Debug

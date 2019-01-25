@@ -6,13 +6,13 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:04:47 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/25 07:02:49 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 08:09:42 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ping.h"
 
-static uint16_t		g_icmp_seq = 1;
+static uint16_t		g_icmp_seq = 0;
 static int			g_sock;
 struct sockaddr_in	g_dest =
 {
@@ -24,14 +24,12 @@ static void	send_ping(__unused int sig)
 {
 	char		sent_packet[PACKET_SIZE];
 
-	// TODO timeout case
-	// 	printf("Request timeout for icmp_seq %hu\n", g_icmp_seq++);
+	g_icmp_seq++;
 
 	gen_ip_header(sent_packet, g_dest.sin_addr.s_addr);
 	gen_icmp_msg(sent_packet + IP_HDR_SIZE, g_icmp_seq);
 
 	send_echo_request(g_sock, (const struct sockaddr *)&g_dest, sent_packet);
-	update_stats();
 
 	alarm(FT_PING_DELAY);
 }
@@ -42,8 +40,7 @@ static void	recv_pong(void)
 	char		rcvd_packet[PACKET_SIZE];
 
 	receive_echo_reply(g_sock, g_dest, rcvd_packet);
-	if (check_reply(rcvd_packet, g_icmp_seq))
-		g_icmp_seq++;
+	check_reply(rcvd_packet, g_icmp_seq);
 
 	// Magic tail recursion
 	JMP_RECV_PONG
@@ -52,7 +49,7 @@ static void	recv_pong(void)
 static void	signal_exit(__unused int sig)
 {
 	close(g_sock);
-	print_stats();
+	print_stats(g_icmp_seq);
 	exit(EXIT_SUCCESS);
 }
 

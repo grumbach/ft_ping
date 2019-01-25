@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/18 20:23:03 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/25 07:51:06 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 08:09:32 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,26 +65,21 @@ static void			update_rtt_stats(suseconds_t rtt, uint16_t seq)
 	}
 }
 
-void				update_stats(void)
-{
-	g_stats.packets_sent++;
-}
-
 void				set_stats_timer(void)
 {
 	g_stats.start_time = get_time();
 }
 
-void				print_stats(void)
+void				print_stats(uint packets_sent)
 {
 	printf("\n--- %s ping statistics ---\n", NULL);
-	printf("%u packets transmitted, ", g_stats.packets_sent);
+	printf("%u packets transmitted, ", packets_sent);
 	printf("%u received, ", g_stats.packets_recvd);
 
 	if (g_stats.nb_errors)
 		printf("+%u errors, ", g_stats.nb_errors);
 
-	float loss = 1.0f - g_stats.packets_recvd / (float)g_stats.packets_sent;
+	float loss = 1.0f - g_stats.packets_recvd / (float)packets_sent;
 	printf("%d%% packet loss, ", (int)(loss * 100.0f));
 
 	suseconds_t timediff = get_time() - g_stats.start_time;
@@ -156,7 +151,7 @@ static const char	*icmp_responses[] =
 
 #ifdef __linux__
 
-bool		check_reply(void *packet, uint16_t seq)
+void		check_reply(void *packet, uint16_t seq)
 {
 	struct iphdr	*ip = packet;
 	struct icmphdr	*icmp = packet + IP_HDR_SIZE;
@@ -185,13 +180,11 @@ bool		check_reply(void *packet, uint16_t seq)
 	}
 
 	g_stats.packets_recvd++;
-
-	return (seq == recvd_seq);
 }
 
 #elif __APPLE__
 
-bool		check_reply(void *packet, uint16_t seq)
+void		check_reply(void *packet, uint16_t seq)
 {
 	struct ip		*ip = packet;
 	struct icmp		*icmp = packet + IP_HDR_SIZE;
@@ -220,8 +213,6 @@ bool		check_reply(void *packet, uint16_t seq)
 	}
 
 	g_stats.packets_recvd++;
-
-	return (seq == recvd_seq);
 }
 
 #endif
