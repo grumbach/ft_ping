@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:05:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/25 08:10:40 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 10:14:05 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <sys/socket.h>
 # include <sys/types.h>
 # include <sys/time.h>
+# include <netdb.h>
 # include <netinet/in.h>
 # include <netinet/ip.h>
 # include <netinet/ip_icmp.h>
@@ -49,16 +50,25 @@
 # define __noreturn				__attribute__((noreturn))
 # define __warn_unused_result	__attribute__((warn_unused_result))
 
-typedef struct		s_stats
+typedef struct			s_ping
 {
-	suseconds_t		rtt_min;
-	suseconds_t		rtt_max;
-	suseconds_t		rtt_total;
-	suseconds_t		rtt_sq_total;
-	suseconds_t		start_time;
-	uint			packets_recvd;
-	uint			nb_errors;
-}					t_stats;
+	struct sockaddr_in	dest;
+	char				*dest_addr;
+	int					sock;
+	uint16_t			sequence;
+	bool				verbose_mode;
+}						t_ping;
+
+typedef struct			s_stats
+{
+	suseconds_t			rtt_min;
+	suseconds_t			rtt_max;
+	suseconds_t			rtt_total;
+	suseconds_t			rtt_sq_total;
+	suseconds_t			start_time;
+	uint				packets_recvd;
+	uint				nb_errors;
+}						t_stats;
 
 /*
 ** Muhahahahahahaha >:D-
@@ -77,9 +87,9 @@ typedef struct		s_stats
 
 int				init_socket(void);
 void			send_echo_request(int icmp_sock, const struct sockaddr *dest, \
-					char *packet);
+					char *packet, bool verbose_mode);
 void			receive_echo_reply(int icmp_sock, struct sockaddr_in sockaddr, \
-					char *packet);
+					char *packet, bool verbose_mode);
 
 /*
 ** Packet creation
@@ -95,7 +105,7 @@ uint16_t		in_cksum(const void *buffer, size_t size);
 
 void			check_reply(void *packet, uint16_t seq);
 void			set_stats_timer(void);
-void			print_stats(uint packets_sent);
+void			print_stats(uint packets_sent, const char *dest_addr);
 
 /*
 ** Debug

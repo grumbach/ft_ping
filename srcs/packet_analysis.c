@@ -6,16 +6,26 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/18 20:23:03 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/25 08:09:32 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 10:11:02 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ping.h"
 
 /*
-** get_rtt
-**   - calculates Round Trip Time in ms
+** Utilities
 */
+
+static char			*net_ntoa(struct in_addr in)
+{
+	static char		buffer[18];
+	unsigned char	*bytes = (unsigned char *) &in;
+
+	snprintf(buffer, sizeof(buffer), "%d.%d.%d.%d", \
+		bytes[0], bytes[1], bytes[2], bytes[3]);
+
+	return (buffer);
+}
 
 static suseconds_t	get_time(void)
 {
@@ -28,6 +38,11 @@ static suseconds_t	get_time(void)
 	}
 	return (curr_time.tv_sec * 1000000 + curr_time.tv_usec);
 }
+
+/*
+** get_rtt
+**   - calculates Round Trip Time in ms
+*/
 
 static suseconds_t	get_rtt(struct timeval *send_time)
 {
@@ -70,9 +85,9 @@ void				set_stats_timer(void)
 	g_stats.start_time = get_time();
 }
 
-void				print_stats(uint packets_sent)
+void				print_stats(uint packets_sent, const char *dest_addr)
 {
-	printf("\n--- %s ping statistics ---\n", NULL);
+	printf("\n--- %s ping statistics ---\n", dest_addr);
 	printf("%u packets transmitted, ", packets_sent);
 	printf("%u received, ", g_stats.packets_recvd);
 
@@ -156,7 +171,7 @@ void		check_reply(void *packet, uint16_t seq)
 	struct iphdr	*ip = packet;
 	struct icmphdr	*icmp = packet + IP_HDR_SIZE;
 	const char		*error_str;
-	char			*sender = inet_ntoa((struct in_addr){.s_addr = ip->saddr});
+	char			*sender = net_ntoa((struct in_addr){.s_addr = ip->saddr});
 	suseconds_t		rtt = get_rtt(packet + IP_HDR_SIZE + ICMP_HDR_SIZE + ALIGN_TIMESTAMP);
 	u_int16_t		recvd_seq = ntohs(icmp->un.echo.sequence);
 
@@ -189,7 +204,7 @@ void		check_reply(void *packet, uint16_t seq)
 	struct ip		*ip = packet;
 	struct icmp		*icmp = packet + IP_HDR_SIZE;
 	const char		*error_str;
-	char			*sender = inet_ntoa((struct in_addr){.s_addr = ip->ip_src.s_addr});
+	char			*sender = net_ntoa((struct in_addr){.s_addr = ip->ip_src.s_addr});
 	suseconds_t		rtt = get_rtt(packet + IP_HDR_SIZE + ICMP_HDR_SIZE + ALIGN_TIMESTAMP);
 	u_int16_t		recvd_seq = ntohs(icmp->icmp_seq);
 

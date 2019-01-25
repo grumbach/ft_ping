@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/18 19:52:51 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/20 05:54:11 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/25 10:16:52 by agrumbac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int		init_socket(void)
 }
 
 void	send_echo_request(int icmp_sock, const struct sockaddr *dest, \
-				char *packet)
+				char *packet, bool verbose_mode)
 {
 	ssize_t	ret;
 
@@ -36,12 +36,15 @@ void	send_echo_request(int icmp_sock, const struct sockaddr *dest, \
 	if (ret == -1)
 		warn("sendto failed");
 
-	printf("sending request:\n");
-	print_ip_icmp_packet(packet);
+	if (verbose_mode)
+	{
+		printf("sending request:\n");
+		print_ip_icmp_packet(packet);
+	}
 }
 
 void	receive_echo_reply(int icmp_sock, struct sockaddr_in sockaddr, \
-			char *packet)
+			char *packet, bool verbose_mode)
 {
 	char			buffer[512];
 	ssize_t			ret;
@@ -64,6 +67,9 @@ void	receive_echo_reply(int icmp_sock, struct sockaddr_in sockaddr, \
 	if (ret == -1)
 		warn("recvmsg failed");
 
-	printf("recieved answer:\n");
-	print_ip_icmp_packet(packet);
+	if (verbose_mode)
+	{
+		printf("recieved answer:\n");
+		print_ip_icmp_packet(packet);
+	}
 }
