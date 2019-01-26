@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/01/18 20:23:03 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/25 15:14:01 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/26 16:56:12 by Anselme          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,7 +227,7 @@ void		check_reply(void *packet, uint16_t seq)
 	{
 		rtt = get_rtt(packet + IP_HDR_SIZE + ICMP_HDR_SIZE + ALIGN_TIMESTAMP);
 		printf("%hu bytes from %s: icmp_seq=%hu ttl=%hhu time=%ld.%02ld ms\n", \
-			(uint16_t)(ntohs(ip->ip_len) - IP_HDR_SIZE), \
+			(uint16_t)(ip->ip_len - IP_HDR_SIZE), \
 			sender, recvd_seq, ip->ip_ttl, rtt / 1000l, rtt % 1000l);
 
 		update_rtt_stats(rtt, seq);

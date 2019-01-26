@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/12 01:42:56 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/19 21:29:54 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/26 16:55:01 by Anselme          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ static inline void	fill_ip_header(struct ip *ip, u_int32_t dest)
 	ip->ip_v = 4;
 	ip->ip_hl = IP_HDR_SIZE / 4;
 	ip->ip_tos = 0;
-	ip->ip_len = htons(PACKET_SIZE);
+	ip->ip_len = PACKET_SIZE;
 	ip->ip_id = htons(0);
-	ip->ip_off = htons(0);
+	ip->ip_off = 0;
 	ip->ip_ttl = FT_PING_TTL;
 	ip->ip_p = IPPROTO_ICMP;
 	ip->ip_sum = 0;

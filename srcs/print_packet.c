@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 18:05:58 by agrumbac          #+#    #+#             */
-/*   Updated: 2019/01/25 10:48:22 by agrumbac         ###   ########.fr       */
+/*   Updated: 2019/01/26 16:55:58 by Anselme          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ void	print_ip_icmp_packet(void *packet)
 	struct ip *ip = packet;
 	struct icmp *icmp = packet + IP_HDR_SIZE;
 
-	printf(packet_format, ip->ip_v, ip->ip_hl, ip->ip_tos, ntohs(ip->ip_len), \
-		ntohs(ip->ip_id), ntohs(ip->ip_off), ip->ip_ttl, ip->ip_p, ip->ip_sum, \
+	printf(packet_format, ip->ip_v, ip->ip_hl, ip->ip_tos, ip->ip_len, \
+		ntohs(ip->ip_id), ip->ip_off, ip->ip_ttl, ip->ip_p, ip->ip_sum, \
 		ip->ip_src.s_addr, ip->ip_dst.s_addr, icmp->icmp_type, icmp->icmp_code, \
 		icmp->icmp_cksum, ntohs(icmp->icmp_id), ntohs(icmp->icmp_seq));
 }
