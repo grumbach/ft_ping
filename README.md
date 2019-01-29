@@ -178,3 +178,7 @@ sysctl -w net.ipv4.ping_group_range="0 0"
 ```
 sudo tcpdump -vnn -e icmp[icmptype] == 8
 ```
+
+# Footnotes
+
+You might want to read this if you're doing this on MacOS : [FreeBSD socket bugs and peculiarities](http://cseweb.ucsd.edu/~braghava/notes/freebsd-sockets.txt)
