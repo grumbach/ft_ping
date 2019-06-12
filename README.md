@@ -1,4 +1,6 @@
 # ft_ping
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/grumbach/ft_ping.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/grumbach/ft_ping/alerts/) [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/grumbach/ft_ping.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/grumbach/ft_ping/context:cpp)
+
 
 Sending ICMP ECHO packets to network hosts
 
